@@ -5,7 +5,6 @@ const {
   INTERNAL_SERVER_ERROR_CODE,
 } = require("../utils/errors");
 
-// GET /users
 const getUsers = (req, res) => {
   User.find({})
     .then((users) => res.send(users))
@@ -17,7 +16,6 @@ const getUsers = (req, res) => {
     });
 };
 
-// POST /users
 const createUser = (req, res) => {
   const { name, avatar } = req.body;
 
@@ -38,7 +36,6 @@ const createUser = (req, res) => {
     });
 };
 
-// GET /users/:id
 const getUser = (req, res) => {
   const { userId } = req.params;
 
