@@ -5,12 +5,12 @@ const mainRouter = require("./routes/index");
 const app = express();
 const { PORT = 3001 } = process.env;
 
-// Parse JSON bodies
 app.use(express.json());
 
-/*
-mongodb+srv://brieanaharris_db_user:YeR61ZJP8GV8xjsx@cluster0.mjgp48g.mongodb.net/wtwr_db?appName=Cluster0
-*/
+app.use((req, res, next) => {
+  req.user = { _id: "6903a10e35ea76defcaf0020" };
+  next();
+});
 
 mongoose
   .connect(
@@ -23,7 +23,6 @@ mongoose
     console.error("Error connecting to DB:", err);
   });
 
-// Corrected middleware usage
 app.use("/", mainRouter);
 
 app.listen(PORT, () => {
