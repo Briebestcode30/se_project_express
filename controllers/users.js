@@ -1,4 +1,9 @@
 const User = require("../models/user");
+const {
+  BAD_REQUEST_ERROR_CODE,
+  NOT_FOUND_ERROR_CODE,
+  INTERNAL_SERVER_ERROR_CODE,
+} = require("../utils/errors");
 
 // GET /users
 const getUsers = (req, res) => {
@@ -6,7 +11,9 @@ const getUsers = (req, res) => {
     .then((users) => res.send(users))
     .catch((err) => {
       console.error(err);
-      res.status(500).send({ message: err.message });
+      res
+        .status(INTERNAL_SERVER_ERROR_CODE)
+        .send({ message: "An error has occurred on the server" });
     });
 };
 
@@ -18,13 +25,20 @@ const createUser = (req, res) => {
     .then((user) => res.status(201).send(user))
     .catch((err) => {
       console.error(err);
+
       if (err.name === "ValidationError") {
-        return res.status(400).send({ message: err.message });
+        return res
+          .status(BAD_REQUEST_ERROR_CODE)
+          .send({ message: err.message });
       }
-      return res.status(500).send({ message: err.message });
+
+      return res
+        .status(INTERNAL_SERVER_ERROR_CODE)
+        .send({ message: "An error has occurred on the server" });
     });
 };
 
+// GET /users/:id
 const getUser = (req, res) => {
   const { userId } = req.params;
 
@@ -33,13 +47,22 @@ const getUser = (req, res) => {
     .then((user) => res.status(200).send(user))
     .catch((err) => {
       console.error(err);
+
       if (err.name === "DocumentNotFoundError") {
-        return res.status(404).send({ message: "User not found" });
+        return res
+          .status(NOT_FOUND_ERROR_CODE)
+          .send({ message: "User not found" });
       }
+
       if (err.name === "CastError") {
-        return res.status(400).send({ message: "Invalid user ID" });
+        return res
+          .status(BAD_REQUEST_ERROR_CODE)
+          .send({ message: "Invalid user ID" });
       }
-      return res.status(500).send({ message: err.message });
+
+      return res
+        .status(INTERNAL_SERVER_ERROR_CODE)
+        .send({ message: "An error has occurred on the server" });
     });
 };
 
