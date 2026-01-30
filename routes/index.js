@@ -1,12 +1,13 @@
 const router = require("express").Router();
-const { NOT_FOUND_ERROR_CODE } = require("../utils/errors");
 
 const userRouter = require("./users");
-const clothingItemRouter = require("./clothingItems");
+const clothingItemRouter = require("./clothingItem"); // <-- add this
 
 router.use("/users", userRouter);
-router.use("/items", clothingItemRouter);
+router.use("/items", clothingItemRouter); // <-- add this
 
+// 404 handler
+const { NOT_FOUND_ERROR_CODE } = require("../utils/errors");
 router.use((req, res) => {
   res
     .status(NOT_FOUND_ERROR_CODE)
