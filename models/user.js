@@ -40,7 +40,6 @@ userSchema.pre("save", async function (next) {
 
 // Custom login method (task 9: handle password safely)
 userSchema.statics.findUserByCredentials = async function (email, password) {
-  // Include password explicitly for login
   const user = await this.findOne({ email }).select("+password");
   if (!user) throw new Error("Incorrect email or password");
 
@@ -57,4 +56,5 @@ userSchema.methods.toJSON = function () {
   return obj;
 };
 
-module.exports = mongoose.model("User", userSchema);
+// ✅ Correct model name
+module.exports = mongoose.model("user", userSchema);

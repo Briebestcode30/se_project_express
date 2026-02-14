@@ -3,6 +3,8 @@ const jwt = require("jsonwebtoken");
 const {
   BAD_REQUEST_ERROR_CODE,
   NOT_FOUND_ERROR_CODE,
+  CONFLICT_ERROR_CODE,
+  UNAUTHORIZED_ERROR_CODE,
   INTERNAL_SERVER_ERROR_CODE,
 } = require("../utils/errors");
 const { JWT_SECRET } = require("../utils/config");
@@ -15,22 +17,26 @@ const createUser = (req, res) => {
 
   User.create({ name, avatar, email, password })
     .then((user) => {
-      // No need to manually delete password; model's toJSON() handles it
-      res.status(201).send(user);
+      res.status(201).send(user); // password hidden by toJSON()
     })
     .catch((err) => {
       console.error(err);
 
+      // Duplicate email
       if (err.code === 11000) {
-        return res.status(409).send({ message: "Email already exists" });
+        return res
+          .status(CONFLICT_ERROR_CODE)
+          .send({ message: "Email already exists" });
       }
 
+      // Validation error
       if (err.name === "ValidationError") {
         return res
           .status(BAD_REQUEST_ERROR_CODE)
           .send({ message: err.message });
       }
 
+      // Unexpected error
       return res
         .status(INTERNAL_SERVER_ERROR_CODE)
         .send({ message: "An error has occurred on the server" });
@@ -54,10 +60,21 @@ const login = async (req, res) => {
 
     const token = jwt.sign({ _id: user._id }, JWT_SECRET, { expiresIn: "7d" });
 
-    res.status(200).json({ token });
+    return res.status(200).json({ token });
   } catch (err) {
     console.error(err);
-    res.status(401).json({ message: "Incorrect email or password" });
+
+    // Known invalid credentials case
+    if (err.message === "Incorrect email or password") {
+      return res
+        .status(UNAUTHORIZED_ERROR_CODE)
+        .json({ message: "Incorrect email or password" });
+    }
+
+    // Any unexpected error
+    return res
+      .status(INTERNAL_SERVER_ERROR_CODE)
+      .json({ message: "An error has occurred on the server" });
   }
 };
 
@@ -65,11 +82,11 @@ const login = async (req, res) => {
 // Get currently logged-in user
 // ------------------------
 const getCurrentUser = (req, res) => {
-  const userId = req.user._id; // from auth middleware
+  const userId = req.user._id;
 
   User.findById(userId)
     .orFail()
-    .then((user) => res.status(200).send(user)) // password hidden automatically
+    .then((user) => res.status(200).send(user))
     .catch((err) => {
       console.error(err);
 
@@ -95,10 +112,10 @@ const updateCurrentUser = (req, res) => {
   User.findByIdAndUpdate(
     userId,
     { name, avatar },
-    { new: true, runValidators: true }, // return updated doc and run validation
+    { new: true, runValidators: true },
   )
     .orFail()
-    .then((updatedUser) => res.status(200).send(updatedUser)) // password hidden automatically
+    .then((updatedUser) => res.status(200).send(updatedUser))
     .catch((err) => {
       console.error(err);
 
@@ -120,4 +137,9 @@ const updateCurrentUser = (req, res) => {
     });
 };
 
-module.exports = { createUser, login, getCurrentUser, updateCurrentUser };
+module.exports = {
+  createUser,
+  login,
+  getCurrentUser,
+  updateCurrentUser,
+};

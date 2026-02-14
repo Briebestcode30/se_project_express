@@ -1,9 +1,9 @@
 const express = require("express");
 const mongoose = require("mongoose");
-const cors = require("cors"); // Step 0: import cors
+const cors = require("cors"); // Enable cross-origin requests
 const mainRouter = require("./routes/index");
 const { createUser, login } = require("./controllers/users");
-const auth = require("./middlewares/auth"); // Auth middleware
+const auth = require("./middlewares/auth");
 
 const app = express();
 const { PORT = 3001 } = process.env;
@@ -11,8 +11,8 @@ const { PORT = 3001 } = process.env;
 // ------------------------------
 // Enable CORS for all origins
 // ------------------------------
-app.use(cors()); // <-- This allows requests from any origin
-// Optional: you can configure it more specifically:
+app.use(cors()); // allows requests from any origin
+// Optional: restrict to specific origin
 // app.use(cors({ origin: "http://localhost:3000" }));
 
 // ------------------------------
@@ -21,18 +21,12 @@ app.use(cors()); // <-- This allows requests from any origin
 app.use(express.json());
 
 // ------------------------------
-// MongoDB Atlas Connection
+// MongoDB Connection (local DB)
 // ------------------------------
 mongoose
-  .connect(
-    "mongodb+srv://brieanaharris_db_user:YeR61ZJP8GV8xjsx@cluster0.mjgp48g.mongodb.net/wtwr_db?retryWrites=true&w=majority",
-  )
-  .then(() => {
-    console.log("✅ Connected to MongoDB Atlas");
-  })
-  .catch((err) => {
-    console.error("❌ Error connecting to MongoDB Atlas:", err);
-  });
+  .connect("mongodb://localhost:27017/wtwr_db") // Local DB per checklist
+  .then(() => console.log("✅ Connected to local MongoDB"))
+  .catch((err) => console.error("❌ Error connecting to MongoDB:", err));
 
 // ------------------------------
 // Public routes: Signup & Signin
