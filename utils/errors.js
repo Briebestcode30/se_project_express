@@ -1,12 +1,10 @@
-// Client errors
-const BAD_REQUEST_ERROR_CODE = 400; // Invalid request / validation error
-const UNAUTHORIZED_ERROR_CODE = 401; // Auth required / invalid credentials
-const FORBIDDEN_ERROR_CODE = 403; // User not allowed to perform action
-const NOT_FOUND_ERROR_CODE = 404; // Resource not found
-const CONFLICT_ERROR_CODE = 409; // Duplicate resource (e.g., email)
+const BAD_REQUEST_ERROR_CODE = 400;
+const UNAUTHORIZED_ERROR_CODE = 401;
+const FORBIDDEN_ERROR_CODE = 403;
+const NOT_FOUND_ERROR_CODE = 404;
+const CONFLICT_ERROR_CODE = 409;
 
-// Server errors
-const INTERNAL_SERVER_ERROR_CODE = 500; // Unexpected server error
+const INTERNAL_SERVER_ERROR_CODE = 500;
 
 module.exports = {
   BAD_REQUEST_ERROR_CODE,

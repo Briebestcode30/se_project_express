@@ -6,9 +6,6 @@ const {
   INTERNAL_SERVER_ERROR_CODE,
 } = require("../utils/errors");
 
-// ------------------------
-// Get all items
-// ------------------------
 const getItems = (req, res) => {
   ClothingItem.find({})
     .then((items) => res.send(items))
@@ -19,9 +16,6 @@ const getItems = (req, res) => {
     });
 };
 
-// ------------------------
-// Create a new item
-// ------------------------
 const createItem = (req, res) => {
   const { name, weather, imageUrl } = req.body;
 
@@ -39,9 +33,6 @@ const createItem = (req, res) => {
     });
 };
 
-// ------------------------
-// Delete an item (task 10: ownership check)
-// ------------------------
 const deleteItem = (req, res) => {
   const { itemId } = req.params;
   const userId = req.user._id;
@@ -54,14 +45,12 @@ const deleteItem = (req, res) => {
           .send({ message: "Item not found" });
       }
 
-      // Check ownership
       if (item.owner.toString() !== userId.toString()) {
         return res
           .status(FORBIDDEN_ERROR_CODE)
           .send({ message: "You are not allowed to delete this item" });
       }
 
-      // Owner matches → delete
       return item
         .remove()
         .then(() => res.send({ message: "Item deleted successfully" }));
@@ -78,9 +67,6 @@ const deleteItem = (req, res) => {
     });
 };
 
-// ------------------------
-// Like an item
-// ------------------------
 const likeItem = (req, res) => {
   const { itemId } = req.params;
 
@@ -109,9 +95,6 @@ const likeItem = (req, res) => {
     });
 };
 
-// ------------------------
-// Dislike an item
-// ------------------------
 const dislikeItem = (req, res) => {
   const { itemId } = req.params;
 

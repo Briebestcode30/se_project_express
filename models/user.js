@@ -27,34 +27,42 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: [true, "Password is required"],
     minlength: 6,
-    select: false, // Hide password by default
+    select: false,
   },
 });
 
-// Hash password before saving
-userSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) return next();
+userSchema.pre("save", async function preSave(next) {
+  if (!this.isModified("password")) {
+    return next();
+  }
+
   this.password = await bcrypt.hash(this.password, 10);
-  next();
+  return next();
 });
 
-// Custom login method (task 9: handle password safely)
-userSchema.statics.findUserByCredentials = async function (email, password) {
+userSchema.statics.findUserByCredentials = async function findUserByCredentials(
+  email,
+  password,
+) {
   const user = await this.findOne({ email }).select("+password");
-  if (!user) throw new Error("Incorrect email or password");
+
+  if (!user) {
+    throw new Error("Incorrect email or password");
+  }
 
   const isMatch = await bcrypt.compare(password, user.password);
-  if (!isMatch) throw new Error("Incorrect email or password");
+
+  if (!isMatch) {
+    throw new Error("Incorrect email or password");
+  }
 
   return user;
 };
 
-// Remove password from user object before sending response
-userSchema.methods.toJSON = function () {
+userSchema.methods.toJSON = function toJSON() {
   const obj = this.toObject();
   delete obj.password;
   return obj;
 };
 
-// ✅ Correct model name
 module.exports = mongoose.model("user", userSchema);

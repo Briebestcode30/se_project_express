@@ -1,5 +1,5 @@
-const User = require("../models/user");
 const jwt = require("jsonwebtoken");
+const User = require("../models/user");
 const {
   BAD_REQUEST_ERROR_CODE,
   NOT_FOUND_ERROR_CODE,
@@ -9,43 +9,35 @@ const {
 } = require("../utils/errors");
 const { JWT_SECRET } = require("../utils/config");
 
-// ------------------------
-// Create a new user
-// ------------------------
 const createUser = (req, res) => {
   const { name, avatar, email, password } = req.body;
 
-  User.create({ name, avatar, email, password })
-    .then((user) => {
-      res.status(201).send(user); // password hidden by toJSON()
-    })
+  User.create({
+    name,
+    avatar,
+    email,
+    password,
+  })
+    .then((user) => res.status(201).send(user))
     .catch((err) => {
-      console.error(err);
-
-      // Duplicate email
       if (err.code === 11000) {
         return res
           .status(CONFLICT_ERROR_CODE)
           .send({ message: "Email already exists" });
       }
 
-      // Validation error
       if (err.name === "ValidationError") {
         return res
           .status(BAD_REQUEST_ERROR_CODE)
           .send({ message: err.message });
       }
 
-      // Unexpected error
       return res
         .status(INTERNAL_SERVER_ERROR_CODE)
         .send({ message: "An error has occurred on the server" });
     });
 };
 
-// ------------------------
-// Login user and return JWT
-// ------------------------
 const login = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -62,34 +54,23 @@ const login = async (req, res) => {
 
     return res.status(200).json({ token });
   } catch (err) {
-    console.error(err);
-
-    // Known invalid credentials case
     if (err.message === "Incorrect email or password") {
       return res
         .status(UNAUTHORIZED_ERROR_CODE)
         .json({ message: "Incorrect email or password" });
     }
 
-    // Any unexpected error
     return res
       .status(INTERNAL_SERVER_ERROR_CODE)
       .json({ message: "An error has occurred on the server" });
   }
 };
 
-// ------------------------
-// Get currently logged-in user
-// ------------------------
 const getCurrentUser = (req, res) => {
-  const userId = req.user._id;
-
-  User.findById(userId)
+  User.findById(req.user._id)
     .orFail()
     .then((user) => res.status(200).send(user))
     .catch((err) => {
-      console.error(err);
-
       if (err.name === "DocumentNotFoundError") {
         return res
           .status(NOT_FOUND_ERROR_CODE)
@@ -102,23 +83,17 @@ const getCurrentUser = (req, res) => {
     });
 };
 
-// ------------------------
-// Update currently logged-in user's profile
-// ------------------------
 const updateCurrentUser = (req, res) => {
-  const userId = req.user._id;
   const { name, avatar } = req.body;
 
   User.findByIdAndUpdate(
-    userId,
+    req.user._id,
     { name, avatar },
     { new: true, runValidators: true },
   )
     .orFail()
-    .then((updatedUser) => res.status(200).send(updatedUser))
+    .then((user) => res.status(200).send(user))
     .catch((err) => {
-      console.error(err);
-
       if (err.name === "DocumentNotFoundError") {
         return res
           .status(NOT_FOUND_ERROR_CODE)
