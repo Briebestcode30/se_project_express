@@ -19,14 +19,20 @@ const getItems = (req, res) => {
 const createItem = (req, res) => {
   const { name, weather, imageUrl } = req.body;
 
-  ClothingItem.create({ name, weather, imageUrl, owner: req.user._id })
+  ClothingItem.create({
+    name,
+    weather,
+    imageUrl,
+    owner: req.user._id,
+  })
     .then((item) => res.status(201).send(item))
     .catch((err) => {
       if (err.name === "ValidationError") {
         return res
           .status(BAD_REQUEST_ERROR_CODE)
-          .send({ message: err.message });
+          .send({ message: "Invalid data" });
       }
+
       return res
         .status(INTERNAL_SERVER_ERROR_CODE)
         .send({ message: "An error has occurred on the server" });
@@ -52,7 +58,7 @@ const deleteItem = (req, res) => {
       }
 
       return item
-        .remove()
+        .deleteOne()
         .then(() => res.send({ message: "Item deleted successfully" }));
     })
     .catch((err) => {
@@ -61,6 +67,7 @@ const deleteItem = (req, res) => {
           .status(BAD_REQUEST_ERROR_CODE)
           .send({ message: "Invalid item ID" });
       }
+
       return res
         .status(INTERNAL_SERVER_ERROR_CODE)
         .send({ message: "An error has occurred on the server" });
@@ -81,6 +88,7 @@ const likeItem = (req, res) => {
           .status(NOT_FOUND_ERROR_CODE)
           .send({ message: "Item not found" });
       }
+
       return res.send(item);
     })
     .catch((err) => {
@@ -89,6 +97,7 @@ const likeItem = (req, res) => {
           .status(BAD_REQUEST_ERROR_CODE)
           .send({ message: "Invalid item ID" });
       }
+
       return res
         .status(INTERNAL_SERVER_ERROR_CODE)
         .send({ message: "An error has occurred on the server" });
@@ -109,6 +118,7 @@ const dislikeItem = (req, res) => {
           .status(NOT_FOUND_ERROR_CODE)
           .send({ message: "Item not found" });
       }
+
       return res.send(item);
     })
     .catch((err) => {
@@ -117,6 +127,7 @@ const dislikeItem = (req, res) => {
           .status(BAD_REQUEST_ERROR_CODE)
           .send({ message: "Invalid item ID" });
       }
+
       return res
         .status(INTERNAL_SERVER_ERROR_CODE)
         .send({ message: "An error has occurred on the server" });

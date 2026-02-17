@@ -11,9 +11,8 @@ const router = express.Router();
 router.post("/signup", createUser);
 router.post("/signin", login);
 
-router.use(auth);
+router.use("/users", auth, userRouter);
 
-router.use("/users", userRouter);
 router.use("/items", clothingItemRouter);
 
 router.use((req, res) => {

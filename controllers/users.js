@@ -29,7 +29,7 @@ const createUser = (req, res) => {
       if (err.name === "ValidationError") {
         return res
           .status(BAD_REQUEST_ERROR_CODE)
-          .send({ message: err.message });
+          .send({ message: "Invalid data" });
       }
 
       return res
@@ -103,7 +103,7 @@ const updateCurrentUser = (req, res) => {
       if (err.name === "ValidationError") {
         return res
           .status(BAD_REQUEST_ERROR_CODE)
-          .send({ message: err.message });
+          .send({ message: "Invalid data" });
       }
 
       return res
