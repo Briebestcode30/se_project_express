@@ -10,7 +10,6 @@ const {
 } = require("../utils/errors");
 const { JWT_SECRET = "your-very-secret-key" } = require("../utils/config");
 
-// Signup
 const createUser = async (req, res) => {
   try {
     const { name, avatar, email, password } = req.body;
@@ -23,7 +22,6 @@ const createUser = async (req, res) => {
 
     const user = await User.create({ name, avatar, email, password });
 
-    // toJSON will remove password automatically
     res.status(201).send(user);
   } catch (err) {
     if (err.code === 11000) {
@@ -42,7 +40,6 @@ const createUser = async (req, res) => {
   }
 };
 
-// Login
 const login = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -70,7 +67,6 @@ const login = async (req, res) => {
   }
 };
 
-// Get current user
 const getCurrentUser = async (req, res) => {
   try {
     const user = await User.findById(req.user._id).orFail();

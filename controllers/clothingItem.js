@@ -6,7 +6,6 @@ const {
   INTERNAL_SERVER_ERROR_CODE,
 } = require("../utils/errors");
 
-// GET all items
 const getItems = async (req, res) => {
   try {
     const items = await ClothingItem.find({}).lean().exec();
@@ -19,7 +18,6 @@ const getItems = async (req, res) => {
   }
 };
 
-// CREATE a new item
 const createItem = async (req, res) => {
   try {
     const { name, weather, imageUrl } = req.body;
@@ -51,7 +49,6 @@ const createItem = async (req, res) => {
   }
 };
 
-// DELETE an item
 const deleteItem = async (req, res) => {
   try {
     const { itemId } = req.params;
@@ -82,7 +79,6 @@ const deleteItem = async (req, res) => {
   }
 };
 
-// LIKE an item
 const likeItem = async (req, res) => {
   try {
     const { itemId } = req.params;
@@ -110,7 +106,6 @@ const likeItem = async (req, res) => {
   }
 };
 
-// DISLIKE an item
 const dislikeItem = async (req, res) => {
   try {
     const { itemId } = req.params;

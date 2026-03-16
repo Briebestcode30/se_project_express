@@ -1,6 +1,6 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const User = require("../models/user"); // your user model
+const User = require("../models/user");
 const {
   BAD_REQUEST_ERROR_CODE,
   UNAUTHORIZED_ERROR_CODE,
@@ -8,7 +8,6 @@ const {
 } = require("../utils/errors");
 const { JWT_SECRET = "dev-secret" } = require("../utils/config");
 
-// Register a new user
 const register = (req, res) => {
   const { name, avatar, email, password } = req.body;
 
@@ -18,7 +17,6 @@ const register = (req, res) => {
       .send({ message: "Name, email, and password are required" });
   }
 
-  // Check if user already exists
   User.findOne({ email })
     .then((existingUser) => {
       if (existingUser) {
@@ -27,7 +25,6 @@ const register = (req, res) => {
           .send({ message: "User with this email already exists" });
       }
 
-      // Hash password
       bcrypt
         .hash(password, 10)
         .then((hash) =>
@@ -39,7 +36,6 @@ const register = (req, res) => {
           }),
         )
         .then((user) => {
-          // Return a token immediately
           const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
             expiresIn: "7d",
           });
@@ -49,7 +45,6 @@ const register = (req, res) => {
     .catch((err) => res.status(500).send({ message: "Server error", err }));
 };
 
-// Login an existing user
 const login = (req, res) => {
   const { email, password } = req.body;
 
@@ -60,7 +55,7 @@ const login = (req, res) => {
   }
 
   User.findOne({ email })
-    .select("+password") // make sure password field is selected
+    .select("+password")
     .then((user) => {
       if (!user) {
         return res
@@ -68,7 +63,6 @@ const login = (req, res) => {
           .send({ message: "Invalid email or password" });
       }
 
-      // Compare password
       bcrypt.compare(password, user.password).then((matched) => {
         if (!matched) {
           return res
@@ -76,7 +70,6 @@ const login = (req, res) => {
             .send({ message: "Invalid email or password" });
         }
 
-        // Issue token
         const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
           expiresIn: "7d",
         });
@@ -86,7 +79,6 @@ const login = (req, res) => {
     .catch((err) => res.status(500).send({ message: "Server error", err }));
 };
 
-// Verify token (used by frontend)
 const checkToken = (req, res) => {
   const { authorization } = req.headers;
 

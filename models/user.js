@@ -30,14 +30,12 @@ const userSchema = new mongoose.Schema({
   },
 });
 
-// Pre-save hashing
 userSchema.pre("save", async function preSave(next) {
   if (!this.isModified("password")) return next();
   this.password = await bcrypt.hash(this.password, 10);
   next();
 });
 
-// Static method for login
 userSchema.statics.findUserByCredentials = async function (email, password) {
   const user = await this.findOne({ email }).select("+password");
   if (!user) throw new Error("Incorrect email or password");
@@ -48,7 +46,6 @@ userSchema.statics.findUserByCredentials = async function (email, password) {
   return user;
 };
 
-// Hide password in responses
 userSchema.methods.toJSON = function () {
   const obj = this.toObject();
   delete obj.password;

@@ -8,7 +8,7 @@ const {
   dislikeItem,
 } = require("../controllers/clothingItem");
 
-router.get("/", auth, getItems); // Auth required now
+router.get("/", auth, getItems);
 
 router.post("/", auth, createItem);
 router.delete("/:itemId", auth, deleteItem);
