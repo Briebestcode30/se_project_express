@@ -1,3 +1,4 @@
+// controllers/users.js
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/user");
@@ -10,6 +11,7 @@ const {
 } = require("../utils/errors");
 const { JWT_SECRET = "your-very-secret-key" } = require("../utils/config");
 
+// Signup
 const createUser = async (req, res) => {
   try {
     const { name, avatar, email, password } = req.body;
@@ -20,29 +22,40 @@ const createUser = async (req, res) => {
         .send({ message: "Name, email, and password are required" });
     }
 
-    const user = await User.create({ name, avatar, email, password });
+    // ❌ REMOVED manual hashing (model handles it)
 
-    res.status(201).send(user);
+    const user = await User.create({
+      name,
+      avatar,
+      email,
+      password, // ✅ plain password
+    });
+
+    res.status(201).send(user); // password already removed by schema
   } catch (err) {
+    console.error("FULL SIGNUP ERROR:", err); // ✅ shows real issue
+
     if (err.code === 11000) {
       return res
         .status(CONFLICT_ERROR_CODE)
         .send({ message: "Email already exists" });
     }
+
     if (err.name === "ValidationError") {
-      return res
-        .status(BAD_REQUEST_ERROR_CODE)
-        .send({ message: "Invalid data" });
+      return res.status(BAD_REQUEST_ERROR_CODE).send({ message: err.message }); // ✅ show real validation error
     }
+
     return res
       .status(INTERNAL_SERVER_ERROR_CODE)
-      .send({ message: "An error has occurred on the server" });
+      .send({ message: err.message }); // ✅ show real server error
   }
 };
 
+// Login
 const login = async (req, res) => {
   try {
     const { email, password } = req.body;
+
     if (!email || !password) {
       return res
         .status(BAD_REQUEST_ERROR_CODE)
@@ -51,7 +64,9 @@ const login = async (req, res) => {
 
     const user = await User.findUserByCredentials(email, password);
 
-    const token = jwt.sign({ _id: user._id }, JWT_SECRET, { expiresIn: "7d" });
+    const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
+      expiresIn: "7d",
+    });
 
     res.status(200).json({ token });
   } catch (err) {
@@ -60,13 +75,16 @@ const login = async (req, res) => {
         .status(UNAUTHORIZED_ERROR_CODE)
         .json({ message: "Incorrect email or password" });
     }
+
     console.error("Login error:", err);
-    res
+
+    return res
       .status(INTERNAL_SERVER_ERROR_CODE)
-      .json({ message: "An error has occurred on the server" });
+      .json({ message: err.message });
   }
 };
 
+// Get current user
 const getCurrentUser = async (req, res) => {
   try {
     const user = await User.findById(req.user._id).orFail();
@@ -77,9 +95,10 @@ const getCurrentUser = async (req, res) => {
         .status(NOT_FOUND_ERROR_CODE)
         .send({ message: "User not found" });
     }
+
     return res
       .status(INTERNAL_SERVER_ERROR_CODE)
-      .send({ message: "An error has occurred on the server" });
+      .send({ message: err.message });
   }
 };
 
@@ -87,11 +106,13 @@ const getCurrentUser = async (req, res) => {
 const updateCurrentUser = async (req, res) => {
   try {
     const { name, avatar } = req.body;
+
     const user = await User.findByIdAndUpdate(
       req.user._id,
       { name, avatar },
       { new: true, runValidators: true },
     ).orFail();
+
     res.status(200).send(user);
   } catch (err) {
     if (err.name === "DocumentNotFoundError") {
@@ -99,14 +120,14 @@ const updateCurrentUser = async (req, res) => {
         .status(NOT_FOUND_ERROR_CODE)
         .send({ message: "User not found" });
     }
+
     if (err.name === "ValidationError") {
-      return res
-        .status(BAD_REQUEST_ERROR_CODE)
-        .send({ message: "Invalid data" });
+      return res.status(BAD_REQUEST_ERROR_CODE).send({ message: err.message });
     }
+
     return res
       .status(INTERNAL_SERVER_ERROR_CODE)
-      .send({ message: "An error has occurred on the server" });
+      .send({ message: err.message });
   }
 };
 

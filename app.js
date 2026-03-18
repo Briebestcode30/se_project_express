@@ -1,22 +1,32 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
-
 const mainRouter = require("./routes/index");
 
+require("dotenv").config();
+
 const app = express();
-const { PORT = 3001 } = process.env;
+const PORT = process.env.PORT || 3001;
+const MONGO_URI =
+  process.env.MONGO_URI ||
+  "mongodb+srv://brieanaharris_db_user:ToriGirl12@cluster0.mjgp48g.mongodb.net/wtwr_db?retryWrites=true&w=majority";
 
 app.use(cors());
 app.use(express.json());
 
-mongoose
-  .connect("mongodb://localhost:27017/wtwr_db")
-  .then(() => console.log("Connected to local MongoDB"))
-  .catch((err) => console.error("MongoDB connection error:", err));
-
 app.use("/", mainRouter);
 
+mongoose
+  .connect(MONGO_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => console.log("✅ Connected to MongoDB Atlas"))
+  .catch((err) => {
+    console.error("❌ MongoDB connection error:", err);
+    process.exit(1);
+  });
+
 app.listen(PORT, () => {
-  console.log(`Listening on port ${PORT}`);
+  console.log(`🚀 Backend listening on port ${PORT}`);
 });
