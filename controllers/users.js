@@ -1,4 +1,3 @@
-// controllers/users.js
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/user");
@@ -11,7 +10,6 @@ const {
 } = require("../utils/errors");
 const { JWT_SECRET = "your-very-secret-key" } = require("../utils/config");
 
-// Signup
 const createUser = async (req, res) => {
   try {
     const { name, avatar, email, password } = req.body;
@@ -22,18 +20,16 @@ const createUser = async (req, res) => {
         .send({ message: "Name, email, and password are required" });
     }
 
-    // ❌ REMOVED manual hashing (model handles it)
-
     const user = await User.create({
       name,
       avatar,
       email,
-      password, // ✅ plain password
+      password,
     });
 
-    res.status(201).send(user); // password already removed by schema
+    res.status(201).send(user);
   } catch (err) {
-    console.error("FULL SIGNUP ERROR:", err); // ✅ shows real issue
+    console.error("FULL SIGNUP ERROR:", err);
 
     if (err.code === 11000) {
       return res
@@ -42,16 +38,15 @@ const createUser = async (req, res) => {
     }
 
     if (err.name === "ValidationError") {
-      return res.status(BAD_REQUEST_ERROR_CODE).send({ message: err.message }); // ✅ show real validation error
+      return res.status(BAD_REQUEST_ERROR_CODE).send({ message: err.message });
     }
 
     return res
       .status(INTERNAL_SERVER_ERROR_CODE)
-      .send({ message: err.message }); // ✅ show real server error
+      .send({ message: err.message });
   }
 };
 
-// Login
 const login = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -84,7 +79,6 @@ const login = async (req, res) => {
   }
 };
 
-// Get current user
 const getCurrentUser = async (req, res) => {
   try {
     const user = await User.findById(req.user._id).orFail();
