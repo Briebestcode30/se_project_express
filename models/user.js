@@ -11,9 +11,9 @@ const userSchema = new mongoose.Schema({
   },
   avatar: {
     type: String,
-    default: "",
+    required: true,
     validate: {
-      validator: (v) => v === "" || validator.isURL(v),
+      validator: (v) => validator.isURL(v),
       message: "You must enter a valid URL",
     },
   },
@@ -30,13 +30,11 @@ const userSchema = new mongoose.Schema({
   },
 });
 
-userSchema.pre("save", async function preSave(next) {
-  if (!this.isModified("password")) return next();
-  this.password = await bcrypt.hash(this.password, 10);
-  next();
-});
-
-userSchema.statics.findUserByCredentials = async function (email, password) {
+// Named async function to satisfy func-names
+userSchema.statics.findUserByCredentials = async function findUserByCredentials(
+  email,
+  password,
+) {
   const user = await this.findOne({ email }).select("+password");
   if (!user) throw new Error("Incorrect email or password");
 
@@ -46,7 +44,8 @@ userSchema.statics.findUserByCredentials = async function (email, password) {
   return user;
 };
 
-userSchema.methods.toJSON = function () {
+// Named function for toJSON method
+userSchema.methods.toJSON = function toJSON() {
   const obj = this.toObject();
   delete obj.password;
   return obj;

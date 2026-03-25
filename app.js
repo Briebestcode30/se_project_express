@@ -3,29 +3,41 @@ require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
+const { errors } = require("celebrate");
+
 const mainRouter = require("./routes/index");
+const { requestLogger, errorLogger } = require("./middlewares/logger");
+const errorHandler = require("./middlewares/errorHandler");
 
 const app = express();
-const PORT = process.env.PORT || 3001;
-const MONGO_URI =
-  "mongodb+srv://brieanaharris_db_user:OolDGBovsOde6pSG@cluster0.mjgp48g.mongodb.net/wtwr_db?retryWrites=true&w=majority";
+const { PORT = 3001 } = process.env;
+const { MONGO_URI } = process.env;
 
+app.use(requestLogger);
 app.use(cors());
 app.use(express.json());
 
+app.get("/crash-test", () => {
+  setTimeout(() => {
+    throw new Error("Server will crash now");
+  }, 0);
+});
+
 app.use("/", mainRouter);
+app.use(errorLogger);
+app.use(errors());
+app.use(errorHandler);
 
 mongoose
-  .connect(MONGO_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
+  .connect(MONGO_URI)
+  .then(() => {
+    console.info("✅ Connected to MongoDB");
   })
-  .then(() => console.log("✅ Connected to MongoDB Atlas"))
   .catch((err) => {
     console.error("❌ MongoDB connection error:", err);
     process.exit(1);
   });
 
 app.listen(PORT, () => {
-  console.log(`🚀 Backend listening on port ${PORT}`);
+  console.info(`🚀 Server running on port ${PORT}`);
 });

@@ -17,7 +17,7 @@ const clothingItemSchema = new mongoose.Schema({
     type: String,
     required: true,
     validate: {
-      validator(value) {
+      validator: function validateURL(value) {
         return validator.isURL(value, {
           protocols: ["http", "https"],
           require_protocol: true,
@@ -42,4 +42,4 @@ const clothingItemSchema = new mongoose.Schema({
   },
 });
 
-module.exports = mongoose.model("clothingItem", clothingItemSchema);
+module.exports = mongoose.model("ClothingItem", clothingItemSchema);

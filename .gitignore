@@ -1,15 +1,17 @@
-# Logs
 logs
 *.log
 npm-debug.log*
 
-# Dependency directory
+.env
+
 node_modules
 
-# Optional npm cache directory
 .npm
 
-# System files and IDE settings folders
+coverage
+dist
+build
+
 .DS_Store
 .idea
 .vscode
