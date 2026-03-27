@@ -17,7 +17,7 @@ const clothingItemSchema = new mongoose.Schema({
     type: String,
     required: true,
     validate: {
-      validator: function validateURL(value) {
+      validator(value) {
         return validator.isURL(value, {
           protocols: ["http", "https"],
           require_protocol: true,
@@ -28,12 +28,12 @@ const clothingItemSchema = new mongoose.Schema({
   },
   owner: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "user",
+    ref: "User",
     required: true,
   },
   likes: {
     type: [mongoose.Schema.Types.ObjectId],
-    ref: "user",
+    ref: "User",
     default: [],
   },
   createdAt: {

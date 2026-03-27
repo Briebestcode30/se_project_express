@@ -10,8 +10,9 @@ const { requestLogger, errorLogger } = require("./middlewares/logger");
 const errorHandler = require("./middlewares/errorHandler");
 
 const app = express();
+
 const { PORT = 3001 } = process.env;
-const { MONGO_URI } = process.env;
+const { MONGO_URI = "mongodb://localhost:27017/wtwr_db" } = process.env;
 
 app.use(requestLogger);
 app.use(cors());
@@ -24,6 +25,7 @@ app.get("/crash-test", () => {
 });
 
 app.use("/", mainRouter);
+
 app.use(errorLogger);
 app.use(errors());
 app.use(errorHandler);

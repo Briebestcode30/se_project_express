@@ -1,15 +1,18 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/user");
+
 const BadRequestError = require("../errors/bad-request-err");
 const NotFoundError = require("../errors/not-found-err");
 const ConflictError = require("../errors/conflict-err");
+const UnauthorizedError = require("../errors/unauthorized-err");
 
-const { JWT_SECRET = "dev-secret" } = process.env; // keep this for jwt.sign
+const { JWT_SECRET = "dev-secret" } = process.env;
 
 const createUser = async (req, res, next) => {
   try {
     const { name, avatar, email, password } = req.body;
+
     const hash = await bcrypt.hash(password, 10);
 
     const user = await User.create({
@@ -40,12 +43,16 @@ const createUser = async (req, res, next) => {
 const login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
+
     const user = await User.findUserByCredentials(email, password);
-    const token = jwt.sign({ _id: user._id }, JWT_SECRET, { expiresIn: "7d" });
+
+    const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
+      expiresIn: "7d",
+    });
 
     return res.send({ token });
   } catch (err) {
-    return next(new BadRequestError("Incorrect email or password"));
+    return next(new UnauthorizedError("Incorrect email or password"));
   }
 };
 
