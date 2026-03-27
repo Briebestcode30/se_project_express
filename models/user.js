@@ -30,7 +30,6 @@ const userSchema = new mongoose.Schema({
   },
 });
 
-// Named async function to satisfy func-names
 userSchema.statics.findUserByCredentials = async function findUserByCredentials(
   email,
   password,
@@ -44,7 +43,6 @@ userSchema.statics.findUserByCredentials = async function findUserByCredentials(
   return user;
 };
 
-// Named function for toJSON method
 userSchema.methods.toJSON = function toJSON() {
   const obj = this.toObject();
   delete obj.password;
