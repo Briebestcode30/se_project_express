@@ -6,9 +6,9 @@
   "type": "commonjs",
   "scripts": {
     "start": "node app.js",
+    "dev": "npx nodemon app.js",
     "lint": "npx eslint .",
-    "lint:fix": "npm run lint -- --fix",
-    "dev": "nodemon app.js"
+    "lint:fix": "npm run lint -- --fix"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",
@@ -26,10 +26,10 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.39.2",
-    "eslint": "^10.1.0",
-    "eslint-config-airbnb-base": "^7.1.0",
+    "eslint": "^8.57.1",
+    "eslint-config-airbnb-base": "^15.0.0",
     "eslint-config-prettier": "^10.1.8",
-    "eslint-plugin-import": "^1.14.0",
+    "eslint-plugin-import": "^2.30.0",
     "globals": "^17.1.0",
     "nodemon": "^3.1.11"
   },
