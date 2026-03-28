@@ -6,9 +6,7 @@
   "type": "commonjs",
   "scripts": {
     "start": "node app.js",
-    "dev": "npx nodemon app.js",
-    "lint": "npx eslint .",
-    "lint:fix": "npm run lint -- --fix"
+    "dev": "npx nodemon app.js"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",
@@ -25,12 +23,6 @@
     "winston": "^3.19.0"
   },
   "devDependencies": {
-    "@eslint/js": "^9.39.2",
-    "eslint": "^8.57.1",
-    "eslint-config-airbnb-base": "^15.0.0",
-    "eslint-config-prettier": "^10.1.8",
-    "eslint-plugin-import": "^2.30.0",
-    "globals": "^17.1.0",
     "nodemon": "^3.1.11"
   },
   "author": "Brieana Harris",
