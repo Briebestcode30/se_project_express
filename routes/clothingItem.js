@@ -1,5 +1,4 @@
 const router = require("express").Router();
-const { celebrate, Joi, Segments } = require("celebrate");
 
 const {
   getItems,
@@ -9,48 +8,14 @@ const {
   dislikeItem,
 } = require("../controllers/clothingItem");
 
-router.get("/", getItems);
+const { validateCreateItem, validateItemId } = require("../utils/validation");
 
-router.post(
-  "/",
-  celebrate({
-    [Segments.BODY]: Joi.object().keys({
-      name: Joi.string().required().min(2).max(30),
-      weather: Joi.string().required().valid("hot", "warm", "cold"),
-      imageUrl: Joi.string().uri().required(),
-    }),
-  }),
-  createItem,
-);
+router.post("/", validateCreateItem, createItem);
 
-router.delete(
-  "/:itemId",
-  celebrate({
-    [Segments.PARAMS]: Joi.object().keys({
-      itemId: Joi.string().hex().length(24).required(),
-    }),
-  }),
-  deleteItem,
-);
+router.delete("/:itemId", validateItemId, deleteItem);
 
-router.put(
-  "/:itemId/likes",
-  celebrate({
-    [Segments.PARAMS]: Joi.object().keys({
-      itemId: Joi.string().hex().length(24).required(),
-    }),
-  }),
-  likeItem,
-);
+router.put("/:itemId/likes", validateItemId, likeItem);
 
-router.delete(
-  "/:itemId/likes",
-  celebrate({
-    [Segments.PARAMS]: Joi.object().keys({
-      itemId: Joi.string().hex().length(24).required(),
-    }),
-  }),
-  dislikeItem,
-);
+router.delete("/:itemId/likes", validateItemId, dislikeItem);
 
 module.exports = router;
