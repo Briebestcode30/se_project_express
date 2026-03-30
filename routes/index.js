@@ -1,3 +1,5 @@
+const { getItems } = require("../controllers/clothingItem");
+
 const express = require("express");
 const auth = require("../middlewares/auth");
 const { createUser, login } = require("../controllers/users");
@@ -8,6 +10,7 @@ const NotFoundError = require("../errors/not-found-err");
 
 const router = express.Router();
 
+router.get("/items", getItems);
 router.post("/signup", validateSignup, createUser);
 router.post("/signin", validateSignin, login);
 
