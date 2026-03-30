@@ -1,7 +1,7 @@
-const { celebrate, Joi } = require("celebrate");
+const { celebrate, Joi, Segments } = require("celebrate");
 
 const validateSignup = celebrate({
-  body: Joi.object().keys({
+  [Segments.BODY]: Joi.object().keys({
     email: Joi.string().email().required(),
     password: Joi.string().required(),
     name: Joi.string().min(2).max(30),
@@ -10,7 +10,7 @@ const validateSignup = celebrate({
 });
 
 const validateSignin = celebrate({
-  body: Joi.object().keys({
+  [Segments.BODY]: Joi.object().keys({
     email: Joi.string().email().required(),
     password: Joi.string().required(),
   }),
@@ -38,9 +38,9 @@ const validateUpdateUser = celebrate({
 });
 
 module.exports = {
+  validateSignup,
+  validateSignin,
   validateCreateItem,
   validateItemId,
   validateUpdateUser,
-  validateSignup,
-  validateSignin,
 };
