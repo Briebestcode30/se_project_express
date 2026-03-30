@@ -8,7 +8,10 @@ const {
   dislikeItem,
 } = require("../controllers/clothingItem");
 
-const { validateCreateItem, validateItemId } = require("../utils/validation");
+const {
+  validateCreateItem,
+  validateItemId,
+} = require("../middlewares/validation");
 
 router.post("/", validateCreateItem, createItem);
 
